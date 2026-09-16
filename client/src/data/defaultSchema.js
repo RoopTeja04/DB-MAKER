@@ -5,6 +5,13 @@ const defaultSchema = `Table users {
   created_at timestamp
 }
 
+Table profiles {
+  id int [pk]
+  user_id int
+  bio varchar
+  avatar_url varchar
+}
+
 Table orders {
   id int [pk]
   user_id int
@@ -28,9 +35,30 @@ Table products {
   stock int
 }
 
+Table tags {
+  id int [pk]
+  name varchar
+}
+
+Table product_tags {
+  product_id int
+  tag_id int
+}
+
+// 1:1  — one user has one profile
+Ref: profiles.user_id - users.id
+
+// N:1  — many orders belong to one user
 Ref: orders.user_id > users.id
-Ref: order_items.order_id > orders.id
+
+// 1:N  — one order has many items
+Ref: order_items.order_id < orders.id
+
+// N:1  — many items reference one product
 Ref: order_items.product_id > products.id
+
+// N:N  — products have many tags, tags belong to many products
+Ref: product_tags.product_id <> tags.id
 `;
 
 export default defaultSchema;

@@ -28,8 +28,6 @@ export function schemaToGraph(schemaData) {
 
       type: "crowsfoot",
 
-      label: `${reference.sourceColumn} → ${reference.targetColumn}`,
-
       animated: false,
 
       style: {
