@@ -98,7 +98,8 @@ function SchemaEditor({ value, onChange, onReset, onClose }) {
         className={`border-t px-4 py-2 ${theme === "dark" ? "border-slate-800" : "border-slate-200"}`}
       >
         <span className="text-xs text-slate-500">
-          Supported: Table, columns, PK, Unique, Ref, Enum, Indexes, default
+          Table · Ref ({">"} N:1 · {"<"} 1:N · - 1:1 · {"<>"} N:N) · Enum ·
+          Indexes · default
         </span>
       </div>
     </div>
