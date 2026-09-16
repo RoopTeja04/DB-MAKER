@@ -10,10 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/vite": "^4.3.3",
     "@xyflow/react": "^12.11.6",
+    "dagre": "^0.8.5",
+    "html-to-image": "^1.11.13",
+    "lucide-react": "^1.46.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-resizable-panels": "^4.12.4",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
