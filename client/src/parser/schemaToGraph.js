@@ -23,6 +23,8 @@ export function schemaToGraph(schemaData) {
       id: `${reference.sourceTable}-${reference.sourceColumn}-${reference.targetTable}-${reference.targetColumn}`,
       source: reference.sourceTable,
       target: reference.targetTable,
+      sourceHandle: reference.sourceColumn,
+      targetHandle: reference.targetColumn,
 
       type: "smoothstep",
 
