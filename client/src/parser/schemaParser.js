@@ -2,11 +2,12 @@ function parseAttributes(attributeString = "") {
   const attributes = {
     primaryKey: false,
     unique: false,
+    default: null,
   };
 
   const attributesList = attributeString
-    .replace("[", "")
-    .replace("]", "")
+    .replace(/^\[/, "")
+    .replace(/\]$/, "")
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
@@ -18,6 +19,13 @@ function parseAttributes(attributeString = "") {
 
     if (attribute === "unique") {
       attributes.unique = true;
+    }
+
+    if (attribute.startsWith("default:")) {
+      attributes.default = attribute
+        .replace("default:", "")
+        .trim()
+        .replace(/^['"]|['"]$/g, "");
     }
   });
 
@@ -54,8 +62,56 @@ function parseTable(lines, startIndex) {
   }
 
   const tableName = tableMatch[1];
-
   const columns = [];
+  const indexes = [];
+
+  let index = startIndex + 1;
+  let inIndexes = false;
+
+  while (index < lines.length) {
+    const line = lines[index].trim();
+
+    if (line === "}") {
+      if (inIndexes) {
+        inIndexes = false;
+      } else {
+        break;
+      }
+    } else if (line === "Indexes {") {
+      inIndexes = true;
+    } else if (line) {
+      if (inIndexes) {
+        indexes.push(line);
+      } else {
+        const column = parseColumn(line);
+        if (column) {
+          columns.push(column);
+        }
+      }
+    }
+
+    index++;
+  }
+
+  return {
+    table: {
+      name: tableName,
+      columns,
+      indexes,
+    },
+    nextIndex: index,
+  };
+}
+
+function parseEnum(lines, startIndex) {
+  const enumMatch = lines[startIndex].match(
+    /^Enum\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\{$/,
+  );
+
+  if (!enumMatch) return null;
+
+  const enumName = enumMatch[1];
+  const values = [];
 
   let index = startIndex + 1;
 
@@ -67,10 +123,9 @@ function parseTable(lines, startIndex) {
     }
 
     if (line) {
-      const column = parseColumn(line);
-
-      if (column) {
-        columns.push(column);
+      const valMatch = line.match(/^([a-zA-Z0-9_]+|'[^']+'|"[^"]+")/);
+      if (valMatch) {
+        values.push(valMatch[1].replace(/['"]/g, ""));
       }
     }
 
@@ -78,9 +133,9 @@ function parseTable(lines, startIndex) {
   }
 
   return {
-    table: {
-      name: tableName,
-      columns,
+    enumDef: {
+      name: enumName,
+      values,
     },
     nextIndex: index,
   };
@@ -115,6 +170,7 @@ export function parseSchema(schema) {
 
   const tables = [];
   const references = [];
+  const enums = [];
 
   let index = 0;
 
@@ -126,6 +182,16 @@ export function parseSchema(schema) {
 
       if (result) {
         tables.push(result.table);
+        index = result.nextIndex + 1;
+        continue;
+      }
+    }
+
+    if (line.startsWith("Enum ")) {
+      const result = parseEnum(lines, index);
+
+      if (result) {
+        enums.push(result.enumDef);
         index = result.nextIndex + 1;
         continue;
       }
@@ -145,5 +211,6 @@ export function parseSchema(schema) {
   return {
     tables,
     references,
+    enums,
   };
 }

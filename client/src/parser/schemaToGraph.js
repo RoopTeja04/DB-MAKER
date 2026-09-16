@@ -26,7 +26,7 @@ export function schemaToGraph(schemaData) {
       sourceHandle: reference.sourceColumn,
       targetHandle: reference.targetColumn,
 
-      type: "smoothstep",
+      type: "crowsfoot",
 
       label: `${reference.sourceColumn} → ${reference.targetColumn}`,
 
@@ -34,6 +34,7 @@ export function schemaToGraph(schemaData) {
 
       style: {
         strokeWidth: 2,
+        stroke: "#64748b",
       },
 
       data: {

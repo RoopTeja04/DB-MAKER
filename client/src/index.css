@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 * {
   box-sizing: border-box;
@@ -15,4 +16,14 @@ body,
 body {
   font-family: Inter, system-ui, sans-serif;
   background: #0f1117;
+}
+
+.schema-panel {
+  width: var(--schema-width);
+}
+
+@media (max-width: 767px) {
+  .schema-panel {
+    width: 100%;
+  }
 }
